@@ -46,7 +46,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) instal
   $ cd download-papers
 
   # Run the app
-  $ python3 download-papers.py --help
+  $ python3 download_papers.py --help
 ```
 
 ### Download
