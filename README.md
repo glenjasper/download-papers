@@ -1,14 +1,25 @@
-[TOC]
-
-# download-papers
-
-## Description
+download-papers
+======================
+[![License](https://poser.pugx.org/phpunit/phpunit/license)](//packagist.org/packages/phpunit/phpunit)
 
 Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
 
+## Table of content
+
+- [Pre-requisites](#pre-requisites)
+    - [Python libraries](#python-libraries)
+- [Installation](#installation)
+    - [Clone](#clone)
+    - [Download](#download)
+- [How To Use](#how-to-use)
+- [Author](#author)
+- [Organization](#organization)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ## Pre-requisites
 
-### Python libraries ###
+### Python libraries
 
 ```sh
   $ sudo apt install -y python3-pip
@@ -22,6 +33,8 @@ Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
 ```
 
 ## Installation
+
+### Clone
 
 To clone and run this application, you'll need [Git](https://git-scm.com) installed on your computer. From your command line:
 
@@ -60,7 +73,7 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
   Thank you!
 ```
 
-## Authors
+## Author
 
 * [Glen Jasper](https://github.com/glenjasper)
 
