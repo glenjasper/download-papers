@@ -1,6 +1,6 @@
 download-papers
 ======================
-[![License](https://poser.pugx.org/phpunit/phpunit/license)](//packagist.org/packages/phpunit/phpunit)
+[![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
 Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
 
