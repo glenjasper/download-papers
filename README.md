@@ -1,2 +1,78 @@
+[TOC]
+
 # download-papers
+
+## Description
+
 Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
+
+## Pre-requisites
+
+### Python libraries ###
+
+```sh
+  $ sudo apt install -y python3-pip
+  $ sudo pip3 install --upgrade pip
+```
+
+```sh
+  $ sudo pip3 install argparse
+  $ sudo pip3 install openpyxl
+  $ sudo pip3 install xlsxwriter
+```
+
+## Installation
+
+To clone and run this application, you'll need [Git](https://git-scm.com) installed on your computer. From your command line:
+
+```bash
+  # Clone this repository
+  $ git clone https://github.com/glenjasper/download-papers.git
+
+  # Go into the repository
+  $ cd download-papers
+
+  # Run the app
+  $ python3 download-papers.py --help
+```
+
+### Download
+
+You can [download](https://github.com/glenjasper/download-papers/archive/master.zip) the latest installable version of download-papers.
+
+## How To Use
+
+```sh  
+  $ python3 download_papers.py --help
+  usage: download_papers.py [-h] -i INPUT_FILE [-o OUTPUT] [--version]
+
+  Script que faz o download de papers (.pdf) a partir dos arquivos formatados
+  .xlsx, utilizando o DOI
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -i INPUT_FILE, --input_file INPUT_FILE
+                          Arquivo que contem os DOI
+    -o OUTPUT, --output OUTPUT
+                          Pasta de saida
+    --version             show program's version number and exit
+
+  Thank you!
+```
+
+## Authors
+
+* [Glen Jasper](https://github.com/glenjasper)
+
+## Organization
+* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - UFMG, Belo Horizonte, Brazil)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+## Acknowledgments
+
+* Aristóteles Góes-Neto
+* Rosimeire Floripes
+* Joyce da Cruz Ferraz
