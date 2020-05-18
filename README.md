@@ -93,6 +93,6 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## Acknowledgments
 
-* Aristóteles Góes-Neto
-* Rosimeire Floripes
-* Joyce da Cruz Ferraz
+* Dr. Aristóteles Góes-Neto
+* MSc. Rosimeire Floripes
+* MSc. Joyce da Cruz Ferraz
