@@ -2,7 +2,7 @@ download-papers
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
+Script that downloads papers (.pdf) from .xlsx formatted files, using DOI.
 
 ## Table of content
 
@@ -56,7 +56,7 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
 
 ## Built With
 
-* [SciDownl](https://github.com/Tishacy/SciDownl): Download pdfs from Scihub via DOI. _(The source code was modified to customize the title of the files)_
+* [SciDownl](https://github.com/Tishacy/SciDownl): Download pdfs from Scihub via DOI. _(The source code was modified to customize the title of the files)_.
 
 ## How To Use
 
@@ -83,12 +83,13 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
 * [Glen Jasper](https://github.com/glenjasper)
 
 ## Organization
-* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil)
+* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
 
 ## License
 
 Copyright (c) 2020 [Glen Jasper](https://github.com/glenjasper).
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgments
 
