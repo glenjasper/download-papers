@@ -11,6 +11,7 @@ Script that downloads papers (.pdf) from .xlsx formatted files, using DOI
 - [Installation](#installation)
     - [Clone](#clone)
     - [Download](#download)
+- [Built With](#built-with)
 - [How To Use](#how-to-use)
 - [Author](#author)
 - [Organization](#organization)
@@ -52,6 +53,10 @@ To clone and run this application, you'll need [Git](https://git-scm.com) instal
 ### Download
 
 You can [download](https://github.com/glenjasper/download-papers/archive/master.zip) the latest installable version of _download-papers_.
+
+## Built With
+
+* [SciDownl](https://github.com/Tishacy/SciDownl): Download pdfs from Scihub via DOI. _(The source code was modified to customize the title of the files)_
 
 ## How To Use
 
