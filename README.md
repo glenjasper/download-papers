@@ -51,7 +51,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) instal
 
 ### Download
 
-You can [download](https://github.com/glenjasper/download-papers/archive/master.zip) the latest installable version of download-papers.
+You can [download](https://github.com/glenjasper/download-papers/archive/master.zip) the latest installable version of _download-papers_.
 
 ## How To Use
 
@@ -78,7 +78,7 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
 * [Glen Jasper](https://github.com/glenjasper)
 
 ## Organization
-* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - UFMG, Belo Horizonte, Brazil)
+* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil)
 
 ## License
 
