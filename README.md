@@ -2,7 +2,7 @@ download-papers
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-Script that downloads papers (.pdf) from .xlsx formatted files, using DOI.
+This scripts downloads .pdf files from formatted .xlsx files, via DOI.
 
 ## Table of content
 
@@ -64,15 +64,14 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
   $ python3 download_papers.py --help
   usage: download_papers.py [-h] -i INPUT_FILE [-o OUTPUT] [--version]
 
-  Script que faz o download de papers (.pdf) a partir dos arquivos formatados
-  .xlsx, utilizando o DOI
+  This scripts downloads .pdf files from formatted .xlsx files, via DOI.
 
   optional arguments:
     -h, --help            show this help message and exit
     -i INPUT_FILE, --input_file INPUT_FILE
-                          Arquivo que contem os DOI
+                          .xlsx file that contains the DOIs
     -o OUTPUT, --output OUTPUT
-                          Pasta de saida
+                          Output folder
     --version             show program's version number and exit
 
   Thank you!
