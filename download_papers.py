@@ -13,9 +13,9 @@ from util.scidownl import scihub
 from openpyxl import load_workbook
 
 def menu(args):
-    parser = argparse.ArgumentParser(description = "Script que faz o download de papers (.pdf) a partir dos arquivos formatados .xlsx, utilizando o DOI", epilog = "Thank you!")
-    parser.add_argument("-i", "--input_file", required = True, help = "Arquivo que contem os DOI")
-    parser.add_argument("-o", "--output", help = "Pasta de saida")
+    parser = argparse.ArgumentParser(description = "This scripts downloads .pdf files from formatted .xlsx files, via DOI.", epilog = "Thank you!")
+    parser.add_argument("-i", "--input_file", required = True, help = ".xlsx file that contains the DOIs")
+    parser.add_argument("-o", "--output", help = "Output folder")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', oscihub.VERSION))
     args = parser.parse_args()
 
