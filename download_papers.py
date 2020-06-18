@@ -93,6 +93,7 @@ class SCIhub:
         self.xls_col_doi = 'DOI'
         self.xls_col_document_type = 'Document Type'
         self.xls_col_languaje = 'Language'
+        self.xls_col_cited_by = 'Cited By'
         self.xls_col_download = 'Download'
         self.xls_col_authors = 'Author(s)'
         self.xls_col_repository = 'Repository'
@@ -104,6 +105,7 @@ class SCIhub:
                                 self.xls_col_doi,
                                 self.xls_col_document_type,
                                 self.xls_col_languaje,
+                                self.xls_col_cited_by,
                                 self.xls_col_download,
                                 self.xls_col_authors]
 
@@ -195,9 +197,9 @@ class SCIhub:
             ncolumns = len(row)
             break
 
-        if ncolumns == 8:
+        if ncolumns == 9:
             self.TYPE_INPUT = self.TYPE_REPOSITORY_UNION
-        elif ncolumns == 7:
+        elif ncolumns == 8:
             self.TYPE_INPUT = self.TYPE_REPOSITORY_UNIQUE
         elif ncolumns == 2:
             self.TYPE_INPUT = self.TYPE_TXT
@@ -234,8 +236,10 @@ class SCIhub:
                     elif index_j == 5:
                         column_name = self.xls_col_languaje
                     elif index_j == 6:
-                        column_name = self.xls_col_authors
+                        column_name = self.xls_col_cited_by
                     elif index_j == 7:
+                        column_name = self.xls_col_authors
+                    elif index_j == 8:
                         column_name = self.xls_col_repository
 
                 collection.update({column_name: cell.value})
@@ -288,13 +292,14 @@ class SCIhub:
             worksheet.set_column(first_col = 3, last_col = 3, width = 33) # Column D:D
             worksheet.set_column(first_col = 4, last_col = 4, width = 18) # Column E:E
             worksheet.set_column(first_col = 5, last_col = 5, width = 12) # Column F:F
-            worksheet.set_column(first_col = 6, last_col = 6, width = 13) # Column G:G
-            worksheet.set_column(first_col = 7, last_col = 7, width = 36) # Column H:H
+            worksheet.set_column(first_col = 6, last_col = 6, width = 11) # Column G:G
+            worksheet.set_column(first_col = 7, last_col = 7, width = 13) # Column H:H
+            worksheet.set_column(first_col = 8, last_col = 8, width = 36) # Column I:I
             if self.TYPE_INPUT == self.TYPE_REPOSITORY_UNION:
-                worksheet.set_column(first_col = 8, last_col = 8, width = 13) # Column I:I
-                worksheet.set_column(first_col = 9, last_col = 9, width = 30) # Column J:J
+                worksheet.set_column(first_col = 9, last_col = 9, width = 13) # Column J:J
+                worksheet.set_column(first_col = 10, last_col = 10, width = 30) # Column K:K
             else:
-                worksheet.set_column(first_col = 8, last_col = 8, width = 30) # Column I:I
+                worksheet.set_column(first_col = 9, last_col = 9, width = 30) # Column J:J
 
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
         icol = 0
@@ -309,6 +314,7 @@ class SCIhub:
                 col_document_type = item[self.xls_col_document_type]
                 col_document_type = self.default_document_type if col_document_type is None else col_document_type
                 col_languaje = item[self.xls_col_languaje]
+                col_cited_by = item[self.xls_col_cited_by]
                 col_authors = item[self.xls_col_authors]
                 if self.TYPE_INPUT == self.TYPE_REPOSITORY_UNION:
                     col_repository = item[self.xls_col_repository]
@@ -331,13 +337,14 @@ class SCIhub:
                 worksheet.write(irow, icol + 3, col_doi, cell_format_row)
                 worksheet.write(irow, icol + 4, col_document_type, cell_format_row)
                 worksheet.write(irow, icol + 5, col_languaje, cell_format_row)
-                worksheet.write(irow, icol + 6, data_status[ctrl_title], cell_format_row)
-                worksheet.write(irow, icol + 7, col_authors, cell_format_row)
+                worksheet.write(irow, icol + 6, col_cited_by, cell_format_row)
+                worksheet.write(irow, icol + 7, data_status[ctrl_title], cell_format_row)
+                worksheet.write(irow, icol + 8, col_authors, cell_format_row)
                 if self.TYPE_INPUT == self.TYPE_REPOSITORY_UNION:
-                    worksheet.write(irow, icol + 8, col_repository, cell_format_row)
-                    worksheet.write(irow, icol + 9, col_pdf_name, cell_format_row)
+                    worksheet.write(irow, icol + 9, col_repository, cell_format_row)
+                    worksheet.write(irow, icol + 10, col_pdf_name, cell_format_row)
                 else:
-                    worksheet.write(irow, icol + 8, col_pdf_name, cell_format_row)
+                    worksheet.write(irow, icol + 9, col_pdf_name, cell_format_row)
         workbook.close()
 
     def save_summary_text(self, dict_control):
