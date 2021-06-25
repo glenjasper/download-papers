@@ -87,10 +87,3 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
-## Acknowledgments
-
-* Dr. Aristóteles Góes-Neto
-* MSc. Rosimeire Floripes
-* MSc. Joyce da Cruz Ferraz
-* MSc. Danitza Xiomara Romero Calle
