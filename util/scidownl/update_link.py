@@ -6,8 +6,11 @@ method 2: Brute force search
 """
 import string, requests, re, os
 from bs4 import BeautifulSoup
-from mspider.spider import MSpider
+from qspider import ThreadManager, Task
 from termcolor import colored
+from colorama import init
+
+init()
 
 LETTERS = list(string.ascii_lowercase)
 STD_INFO = colored('[INFO] ', 'green')
@@ -23,8 +26,8 @@ def update_link(mod='c'):
     if mod == 'c':
         # method 1: crawl the website.
         # src_url = "https://sci-hub.top/"
-        src_url = "https://lovescihub.wordpress.com/"
-        # src_url = "http://tool.yovisun.com/scihub/"
+        # src_url = "https://lovescihub.wordpress.com/"
+        src_url = "http://tool.yovisun.com/scihub/"
         html = requests.get(src_url).text
         available_links = re.findall(PATTERN, html)
         for link in available_links:
@@ -44,21 +47,26 @@ def update_link(mod='c'):
                     url_list.extend([url, url2])
             return url_list
 
-        def basic_func(index, link):
-            try:
-                html = requests.get(link, timeout=6).content
-                soup = BeautifulSoup(html, 'lxml')
-                title = soup.title.contents[0]
-                if title[:7] == "Sci-Hub":
-                    print('\n' + STD_INFO + "%s" %(link))
-                    LINK_FILE.write(link + '\n')
-                else:
-                    print("\r%spassing...".ljust(60) %(STD_INFO), end='')
-            except:
-                print("\r%spassing...".ljust(60) %(STD_INFO), end='')
+        class SearchTask(Task):
+            def __init__(self, link):
+                Task.__init__(self, link)
+                self.link = link
 
-        spider = MSpider(basic_func, get_url_list(), batch_size=10)
-        spider.crawl()  
+            def run(self):
+                try:
+                    html = requests.get(self.link, timeout=3).content
+                    soup = BeautifulSoup(html, 'lxml')
+                    title = soup.title.contents[0]
+                    if title[:7] == "Sci-Hub":
+                        msg = "\r" + STD_INFO + "Found %s" %(self.link)
+                        print(msg.ljust(os.get_terminal_size().columns, " "))
+                        LINK_FILE.write(self.link + '\n')
+                except Exception as e:
+                    # print("\r%spassing...".ljust(60) %(STD_INFO), end='')
+                    return 
+
+        tm = ThreadManager(get_url_list(), SearchTask, has_result=False, num_workers=500, add_failed=True)
+        tm.run()
     LINK_FILE.close()
 
 def get_resource_path(path):

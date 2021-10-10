@@ -5,9 +5,11 @@ import requests, os, sys, re
 from bs4 import BeautifulSoup
 from PIL import Image
 from termcolor import colored
+from colorama import init
 
 from .update_link import update_link, get_resource_path
 
+init()
 
 STD_INFO = colored('[INFO] ', 'green')
 STD_ERROR = colored('[ERROR] ', 'red')
@@ -15,13 +17,12 @@ STD_WARNING = colored('[WARNING] ', 'yellow')
 STD_INPUT = colored('[INPUT] ', 'blue')
 
 class SciHub(object):
-    def __init__(self, doi, out='.', filename=None, prefix=None):
+    def __init__(self, doi, out='.', filename=None):
         self.doi = doi
         self.out = out
         self.filename = filename
         if self.filename is not None:
             self.filename = self.check_title(self.filename)
-        self.prefix = prefix
         self.sess = requests.Session()
         self.check_out_path()
         self.read_available_links()
@@ -44,16 +45,12 @@ class SciHub(object):
         if self.scihub_url[-3:] == "red":
             self.scihub_url = self.scihub_url.replace('red', 'tw')
 
-    def rename_pdf(self, opdf):
-        _title = opdf['title']
+    def rename_pdf(self, o_pdf):
+        _title = o_pdf['title']
         if self.filename is not None:
             _title = self.filename
 
-        _prefix = ''
-        if self.prefix is not None:
-            _prefix = '%s.' % self.prefix
-
-        opdf['title'] = '%s%s' % (_prefix, _title)
+        o_pdf['title'] = _title
 
     def download(self, choose_scihub_url_index=-1):
         """Download the pdf of self.doi to the self.out path.
@@ -126,7 +123,7 @@ class SciHub(object):
         pdf = {}
         soup = BeautifulSoup(html, 'html.parser')
         
-        pdf_url = soup.find('iframe', {'id': 'pdf'}).attrs['src'].split('#')[0]
+        pdf_url = soup.find('embed', {'id': 'pdf'}).attrs['src'].split('#')[0]
         pdf['pdf_url'] = pdf_url.replace('https', 'http') if 'http' in pdf_url else 'http:' + pdf_url
         
         title = ' '.join(self._trim(soup.title.text.split('|')[1]).split('/')).split('.')[0]
@@ -151,7 +148,6 @@ class SciHub(object):
         new_title = re.sub(rstr, " ", title)[:200]
         new_title = re.sub("\n", " ", new_title)
         new_title = re.sub("  ", " ", new_title)
-
         return new_title
 
     def download_pdf(self, pdf):

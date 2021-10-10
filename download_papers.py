@@ -481,7 +481,7 @@ class SCIhub:
                         self.create_directory(directory)
 
                         self.show_print("[%s/%s] Downloading paper..." % (idx, record_count), [self.LOG_FILE], font = self.GREEN)
-                        scihub.SciHub(doi = doi, out = directory, filename = title, prefix = year).download(choose_scihub_url_index = self.SCIHUB_ID)
+                        scihub.SciHub(doi = doi, out = directory, filename = '%s.%s' % (year, title)).download(choose_scihub_url_index = self.SCIHUB_ID)
                         self.show_print("", [self.LOG_FILE])
                         dict_ctrl.update({ctrl_title: self.STATUS_OK})
                         self.write_file_control(ctrl_title, self.STATUS_OK)
