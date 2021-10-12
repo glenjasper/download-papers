@@ -320,7 +320,8 @@ class SCIhub:
                     col_repository = item[self.xls_col_repository]
 
                 _col_year = self.STATUS_NO_YEAR if col_year is None else col_year
-                ctrl_title = '%s.%s.%s.pdf' % (col_document_type, _col_year, self.check_title(col_title))
+                _year_title = '%s.%s' % (_col_year, col_title)
+                ctrl_title = '%s.%s.pdf' % (col_document_type, self.check_title(_year_title))
 
                 col_pdf_name = None
                 if data_status[ctrl_title] == self.STATUS_OK:
@@ -372,8 +373,9 @@ class SCIhub:
             _year = item[self.xls_col_year]
             _year = self.STATUS_NO_YEAR if _year is None else _year 
             _title = item[self.xls_col_title]
-            _title = self.check_title(_title)
-            pdfname = '%s.%s.pdf' % (_year, _title)
+            _year_title = '%s.%s' % (_year, _title)
+            _title = self.check_title(_year_title)
+            pdfname = '%s.pdf' % (_title)
 
             item.update({self.xls_col_pdf_name: pdfname})
 
@@ -434,8 +436,9 @@ class SCIhub:
                 _year = item[self.xls_col_year]
                 _year = self.STATUS_NO_YEAR if _year is None else _year 
                 _title = item[self.xls_col_title]
-                _title = self.check_title(_title)
-                pdfname = '%s.%s.%s.pdf' % (_document_type, _year, _title)
+                _year_title = '%s.%s' % (_year, _title)
+                _title = self.check_title(_year_title)
+                pdfname = '%s.%s.pdf' % (_document_type, _title)
                 _status = dict_ctrl[pdfname] if pdfname in dict_ctrl else None
             item.update({self.STATUS_NAME: _status})
 
@@ -460,7 +463,8 @@ class SCIhub:
                 message = "[%s/%s] Analyzing the Paper: %s" % (idx, record_count, title)
                 year = item[self.xls_col_year]
                 year = self.STATUS_NO_YEAR if year is None else year
-                ctrl_title = '%s.%s.%s.pdf' % (document_type, year, self.check_title(title))
+                _year_title = '%s.%s' % (year, title)
+                ctrl_title = '%s.%s.pdf' % (document_type, self.check_title(_year_title))
 
             self.show_print(message, [self.LOG_FILE], font = self.YELLOW)
 
