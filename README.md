@@ -28,6 +28,7 @@ This scripts downloads .pdf files from formatted .xlsx files, via DOI.
 ```
 
 ```sh
+  $ sudo pip3 install -U scidownl
   $ sudo pip3 install argparse
   $ sudo pip3 install openpyxl
   $ sudo pip3 install xlsxwriter
@@ -56,7 +57,7 @@ You can [download](https://github.com/glenjasper/download-papers/archive/master.
 
 ## Built With
 
-* [SciDownl](https://github.com/Tishacy/SciDownl): Download pdfs from Scihub via DOI. _(The source code was modified to customize the title of the files)_.
+* [SciDownl](https://github.com/Tishacy/SciDownl): Download pdfs from Scihub via DOI.
 
 ## How To Use
 

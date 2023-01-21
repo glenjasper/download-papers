@@ -8,8 +8,7 @@ import shutil
 import argparse
 import traceback
 import xlsxwriter
-# from scidownl import scihub
-from util.scidownl import scihub
+import subprocess
 from openpyxl import load_workbook
 
 def menu(args):
@@ -19,6 +18,12 @@ def menu(args):
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', oscihub.VERSION))
     args = parser.parse_args()
 
+    # Check scidownl
+    out_scidownl = oscihub.get_command('scidownl -h')
+    if 'Usage: scidownl' not in out_scidownl:
+        oscihub.show_print("It looks like 'scidownl' is not installed, you can install it with: pip3 install -U scidownl", showdate = False, font = oscihub.YELLOW)
+        exit()
+
     file_name = os.path.basename(args.input_file)
     file_path = os.path.dirname(args.input_file)
     if file_path is None or file_path == "":
@@ -26,8 +31,8 @@ def menu(args):
 
     oscihub.INPUT_FILE = os.path.join(file_path, file_name)
     if not oscihub.check_path(oscihub.INPUT_FILE):
-        oscihub.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), oscihub.INPUT_FILE), showdate = False)
-        oscihub.show_print("%s: error: the following arguments are required: -i/--input_file" % os.path.basename(__file__), showdate = False)
+        oscihub.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), oscihub.INPUT_FILE), showdate = False, font = oscihub.YELLOW)
+        oscihub.show_print("%s: error: the following arguments are required: -i/--input_file" % os.path.basename(__file__), showdate = False, font = oscihub.YELLOW)
         exit()
 
     if args.output is not None:
@@ -39,7 +44,7 @@ def menu(args):
         oscihub.OUTPUT_PATH = os.path.join(output_path, output_name)
         created = oscihub.create_directory(oscihub.OUTPUT_PATH)
         if not created:
-            oscihub.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), oscihub.OUTPUT_PATH), showdate = False)
+            oscihub.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), oscihub.OUTPUT_PATH), showdate = False, font = oscihub.YELLOW)
             exit()
     else:
         oscihub.OUTPUT_PATH = os.getcwd().strip()
@@ -442,11 +447,11 @@ class SCIhub:
                 _status = dict_ctrl[pdfname] if pdfname in dict_ctrl else None
             item.update({self.STATUS_NAME: _status})
 
-    def download_pdf(self, dictionary, dict_ctrl):
-        record_count = len(dictionary)
+    def download_pdf(self, dict_information, dict_ctrl):
+        record_count = len(dict_information)
         summary_not_availables = {}
         summary_non_existents = {}
-        for idx, item in dictionary.items():
+        for idx, item in dict_information.items():
             doi = item[self.xls_col_doi]
             status = item[self.STATUS_NAME]
 
@@ -485,10 +490,15 @@ class SCIhub:
                         self.create_directory(directory)
 
                         self.show_print("[%s/%s] Downloading paper..." % (idx, record_count), [self.LOG_FILE], font = self.GREEN)
-                        scihub.SciHub(doi = doi, out = directory, filename = '%s.%s' % (year, title)).download(choose_scihub_url_index = self.SCIHUB_ID)
+                        self.run_scidownl(doi = doi, out = directory, filename = '%s.%s' % (year, title))
                         self.show_print("", [self.LOG_FILE])
                         dict_ctrl.update({ctrl_title: self.STATUS_OK})
                         self.write_file_control(ctrl_title, self.STATUS_OK)
+
+                        # Rename
+                        pdf_downloaded = os.path.join(directory, '%s.%s.pdf' % (year, title.replace(' ', '_')))
+                        pdf_downloaded_rename = os.path.join(directory, '%s.%s.pdf' % (year, title.replace('_', ' ')))
+                        os.rename(pdf_downloaded, pdf_downloaded_rename)
                     except Exception:
                         self.show_print("[%s/%s] Download link not available, please try after sometime" % (idx, record_count), [self.LOG_FILE], font = self.YELLOW)
                         self.show_print("[%s/%s] Also try prepending 'http://dx.doi.org/' to input" % (idx, record_count), [self.LOG_FILE], font = self.YELLOW)
@@ -507,9 +517,62 @@ class SCIhub:
         self.show_print("[SUMMARY]", [self.LOG_FILE], font = self.GREEN)
         self.show_print("  Papers/DOIs analyzed: %s" % record_count, [self.LOG_FILE], font = self.GREEN)
         self.show_print("    Papers/DOIs downloaded: %s (see %s)" % (record_count - len(summary_not_availables) - len(summary_non_existents), self.OUTPUT_PATH), [self.LOG_FILE], font = self.GREEN)
-        self.save_summary_xls(dictionary, dict_ctrl)
+        self.save_summary_xls(dict_information, dict_ctrl)
         self.save_summary_text(dict_ctrl)
         self.show_print("  For more details see the file: %s" % self.XLS_FILE, [self.LOG_FILE], font = self.GREEN)
+
+    def run_scidownl(self, doi, out, filename):
+        # scidownl download --doi 10.1145/3375633 -o output_file
+
+        command = ["scidownl download",
+                   "--doi %s" % doi,
+                   "--out %s" % os.path.join(out, filename.replace(' ', '_'))]
+
+        # Command execution
+        _command = " ".join(command)
+        try:
+            p = subprocess.Popen(_command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+        except Exception as e:
+            self.show_print("Error %s while executing command %s" % (e, _command), [self.LOG_FILE], font = self.YELLOW)
+
+        successful = False
+        success_words = ["Successfully", "download"]
+        for line in iter(p.stdout.readline, b''):
+            _line = line.decode('utf-8').rstrip()
+            if successful is False and self.search_word_array(success_words, _line):
+                successful = True
+            self.show_print(_line, [self.LOG_FILE])
+
+        '''
+        if not successful:
+            self.show_print("ERROR executing!", [self.LOG_FILE], font = self.YELLOW)
+            self.show_print("Check the command: %s" % (_command), [self.LOG_FILE], font = self.YELLOW)
+            self.show_print("", [self.LOG_FILE])
+            # sys.exit(1)
+        '''
+        assert successful, 'ERROR'
+
+    def search_word_array(self, words = [], string = None):
+        for item in words:
+            if item not in string:
+                return False
+        return True
+
+    def get_command(self, cmd):
+        p = subprocess.Popen(cmd, shell = True, stdin = None, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        (checkStdout, checkStderr) = p.communicate()
+        checkStdout = checkStdout.decode('utf-8').strip()
+        checkStderr = checkStderr.decode('utf-8').strip()
+
+        output_list = []
+        if checkStdout:
+            for line in checkStdout.splitlines():
+                for word in line.strip().split():
+                    output_list.append(word.strip())
+        else:
+            output_list.append('ERROR')
+
+        return ' '.join(output_list)
 
 def main(args):
     try:
