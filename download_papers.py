@@ -176,10 +176,18 @@ class SCIhub:
         return _check
 
     def check_title(self, title):
-        rstr = r"[\/\\\:\*\?\"\“\”\<\>\|\@\°\'\‘\’\®]" # / \ : * ? " “ ” < > | @ ° ' ‘ ’ ®
-        new_title = re.sub(rstr, " ", title)[:200]
+        rstr = r"[\/\\\:\*\?\"\“\”\<\>\|\@\°\'\‘\’\®\–\-]" # / \ : * ? " “ ” < > | @ ° ' ‘ ’ ® – -
+        new_title = re.sub(rstr, " ", title)
         new_title = re.sub("\n", " ", new_title)
         new_title = re.sub("  ", " ", new_title)
+        new_title = re.sub("  ", " ", new_title)
+        new_title = new_title.replace('(', '')
+        new_title = new_title.replace(')', '')
+
+        if '[' in new_title:
+            new_title = new_title.split('[')[0].strip()
+
+        new_title = new_title.replace(' ', '_')[:200]
 
         return new_title
 
@@ -490,15 +498,12 @@ class SCIhub:
                         self.create_directory(directory)
 
                         self.show_print("[%s/%s] Downloading paper..." % (idx, record_count), [self.LOG_FILE], font = self.GREEN)
-                        self.run_scidownl(doi = doi, out = directory, filename = '%s.%s' % (year, title))
+                        pdfname = '%s.%s' % (year, title)
+                        pdfname = self.check_title(pdfname)
+                        self.run_scidownl(doi = doi, out = directory, filename = pdfname)
                         self.show_print("", [self.LOG_FILE])
                         dict_ctrl.update({ctrl_title: self.STATUS_OK})
                         self.write_file_control(ctrl_title, self.STATUS_OK)
-
-                        # Rename
-                        pdf_downloaded = os.path.join(directory, '%s.%s.pdf' % (year, title.replace(' ', '_')))
-                        pdf_downloaded_rename = os.path.join(directory, '%s.%s.pdf' % (year, title.replace('_', ' ')))
-                        os.rename(pdf_downloaded, pdf_downloaded_rename)
                     except Exception:
                         self.show_print("[%s/%s] Download link not available, please try after sometime" % (idx, record_count), [self.LOG_FILE], font = self.YELLOW)
                         self.show_print("[%s/%s] Also try prepending 'http://dx.doi.org/' to input" % (idx, record_count), [self.LOG_FILE], font = self.YELLOW)
@@ -539,17 +544,22 @@ class SCIhub:
         success_words = ["Successfully", "download"]
         for line in iter(p.stdout.readline, b''):
             _line = line.decode('utf-8').rstrip()
+            # _line = line.decode('cp1252').rstrip()
             if successful is False and self.search_word_array(success_words, _line):
                 successful = True
             self.show_print(_line, [self.LOG_FILE])
 
         '''
-        if not successful:
-            self.show_print("ERROR executing!", [self.LOG_FILE], font = self.YELLOW)
-            self.show_print("Check the command: %s" % (_command), [self.LOG_FILE], font = self.YELLOW)
-            self.show_print("", [self.LOG_FILE])
-            # sys.exit(1)
+        successful = True
+        error_words = ["Failed", "download", "paper"]
+        for line in iter(p.stdout.readline, b''):
+            _line = line.decode('utf-8').rstrip()
+            # _line = line.decode('cp1252').rstrip()
+            if successful and self.search_word_array(error_words, _line):
+                successful = False
+            self.show_print(_line, [self.LOG_FILE])
         '''
+
         assert successful, 'ERROR'
 
     def search_word_array(self, words = [], string = None):
