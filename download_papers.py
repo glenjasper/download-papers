@@ -187,7 +187,7 @@ class SCIhub:
         if '[' in new_title:
             new_title = new_title.split('[')[0].strip()
 
-        new_title = new_title.replace(' ', '_')[:200]
+        new_title = new_title[:200]
 
         return new_title
 
@@ -229,6 +229,7 @@ class SCIhub:
                 if cell.value == self.xls_col_item:
                     break
                 column_name = None
+                cell_value = cell.value
 
                 if self.TYPE_INPUT == self.TYPE_TXT:
                     if index_j == 0:
@@ -255,7 +256,7 @@ class SCIhub:
                     elif index_j == 8:
                         column_name = self.xls_col_repository
 
-                collection.update({column_name: cell.value})
+                collection.update({column_name: cell_value})
 
             if len(collection) > 0:
                 file_collection.update({index_i: collection})
@@ -530,8 +531,8 @@ class SCIhub:
         # scidownl download --doi 10.1145/3375633 -o output_file
 
         command = ["scidownl download",
-                   "--doi %s" % doi,
-                   "--out %s" % os.path.join(out, filename.replace(' ', '_'))]
+                   "--doi '%s'" % doi,
+                   "--out '%s'" % os.path.join(out, filename)]
 
         # Command execution
         _command = " ".join(command)
@@ -548,17 +549,6 @@ class SCIhub:
             if successful is False and self.search_word_array(success_words, _line):
                 successful = True
             self.show_print(_line, [self.LOG_FILE])
-
-        '''
-        successful = True
-        error_words = ["Failed", "download", "paper"]
-        for line in iter(p.stdout.readline, b''):
-            _line = line.decode('utf-8').rstrip()
-            # _line = line.decode('cp1252').rstrip()
-            if successful and self.search_word_array(error_words, _line):
-                successful = False
-            self.show_print(_line, [self.LOG_FILE])
-        '''
 
         assert successful, 'ERROR'
 
