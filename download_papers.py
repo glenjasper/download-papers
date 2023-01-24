@@ -187,7 +187,7 @@ class SCIhub:
         if '[' in new_title:
             new_title = new_title.split('[')[0].strip()
 
-        new_title = new_title[:200]
+        new_title = new_title[:200].strip()
 
         return new_title
 
