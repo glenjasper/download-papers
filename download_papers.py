@@ -11,7 +11,7 @@ import xlsxwriter
 import subprocess
 from openpyxl import load_workbook
 
-def menu(args):
+def menu():
     parser = argparse.ArgumentParser(description = "This scripts downloads .pdf files from formatted .xlsx files, via DOI.", epilog = "Thank you!")
     parser.add_argument("-i", "--input_file", required = True, help = ".xlsx file that contains the DOIs")
     parser.add_argument("-o", "--output", help = "Output folder")
@@ -574,10 +574,10 @@ class SCIhub:
 
         return ' '.join(output_list)
 
-def main(args):
+def main():
     try:
         start = oscihub.start_time()
-        menu(args)
+        menu()
 
         oscihub.LOG_FILE = os.path.join(oscihub.OUTPUT_PATH, oscihub.LOG_NAME)
         oscihub.XLS_FILE = os.path.join(oscihub.OUTPUT_PATH, oscihub.XLS_FILE)
@@ -616,4 +616,4 @@ def main(args):
 
 if __name__ == '__main__':
     oscihub = SCIhub()
-    main(sys.argv)
+    main()
