@@ -89,7 +89,7 @@ class SCIhub:
 
         # Xls Summary
         self.XLS_FILE = 'summary_download.xlsx'
-        self.XLS_SHEET_DETAIL = 'Detail'
+        self.XLS_SHEET_UNIQUE = 'Unique'
 
         # Xls Columns
         self.xls_col_item = 'Item'
@@ -202,7 +202,7 @@ class SCIhub:
 
     def set_xls_type(self):
         workbook = load_workbook(filename = self.INPUT_FILE, data_only = True)
-        sheet = workbook[self.XLS_SHEET_DETAIL]
+        sheet = workbook[self.XLS_SHEET_UNIQUE]
         rows = sheet.rows
 
         ncolumns = 0
@@ -219,7 +219,7 @@ class SCIhub:
 
     def read_xls_summary(self):
         workbook = load_workbook(filename = self.INPUT_FILE, data_only = True)
-        sheet = workbook[self.XLS_SHEET_DETAIL]
+        sheet = workbook[self.XLS_SHEET_UNIQUE]
         rows = sheet.rows
 
         file_collection = {}
@@ -280,7 +280,7 @@ class SCIhub:
         _last_col = len(_xls_columns) - 1
 
         workbook = xlsxwriter.Workbook(self.XLS_FILE)
-        worksheet = workbook.add_worksheet(self.XLS_SHEET_DETAIL)
+        worksheet = workbook.add_worksheet(self.XLS_SHEET_UNIQUE)
         worksheet.freeze_panes(row = 1, col = 0) # Freeze the first row.
         worksheet.autofilter(first_row = 0, first_col = 0, last_row = 0, last_col = _last_col) # 'A1:H1'
         worksheet.set_default_row(height = 14.5)
