@@ -94,6 +94,7 @@ class SCIhub:
         # Xls Columns
         self.xls_col_item = 'Item'
         self.xls_col_title = 'Title'
+        self.xls_col_abstract = 'Abstract'
         self.xls_col_year = 'Year'
         self.xls_col_doi = 'DOI'
         self.xls_col_document_type = 'Document Type'
@@ -106,6 +107,7 @@ class SCIhub:
 
         self.xls_columns_csv = [self.xls_col_item,
                                 self.xls_col_title,
+                                self.xls_col_abstract,
                                 self.xls_col_year,
                                 self.xls_col_doi,
                                 self.xls_col_document_type,
@@ -210,9 +212,9 @@ class SCIhub:
             ncolumns = len(row)
             break
 
-        if ncolumns == 9:
+        if ncolumns == 10:
             self.TYPE_INPUT = self.TYPE_REPOSITORY_UNION
-        elif ncolumns == 8:
+        elif ncolumns == 9:
             self.TYPE_INPUT = self.TYPE_REPOSITORY_UNIQUE
         elif ncolumns == 2:
             self.TYPE_INPUT = self.TYPE_TXT
@@ -242,18 +244,20 @@ class SCIhub:
                     elif index_j == 1:
                         column_name = self.xls_col_title
                     elif index_j == 2:
-                        column_name = self.xls_col_year
+                        column_name = self.xls_col_abstract
                     elif index_j == 3:
-                        column_name = self.xls_col_doi
+                        column_name = self.xls_col_year
                     elif index_j == 4:
-                        column_name = self.xls_col_document_type
+                        column_name = self.xls_col_doi
                     elif index_j == 5:
-                        column_name = self.xls_col_languaje
+                        column_name = self.xls_col_document_type
                     elif index_j == 6:
-                        column_name = self.xls_col_cited_by
+                        column_name = self.xls_col_languaje
                     elif index_j == 7:
-                        column_name = self.xls_col_authors
+                        column_name = self.xls_col_cited_by
                     elif index_j == 8:
+                        column_name = self.xls_col_authors
+                    elif index_j == 9:
                         column_name = self.xls_col_repository
 
                 collection.update({column_name: cell_value})
@@ -297,23 +301,24 @@ class SCIhub:
         # Add rows
         if self.TYPE_INPUT == self.TYPE_TXT:
             worksheet.set_column(first_col = 0, last_col = 0, width = 7)  # Column A:A
-            worksheet.set_column(first_col = 1, last_col = 1, width = 33) # Column B:B
+            worksheet.set_column(first_col = 1, last_col = 1, width = 30) # Column B:B
             worksheet.set_column(first_col = 2, last_col = 2, width = 13) # Column C:C
         else:
             worksheet.set_column(first_col = 0, last_col = 0, width = 7)  # Column A:A
-            worksheet.set_column(first_col = 1, last_col = 1, width = 40) # Column B:B
-            worksheet.set_column(first_col = 2, last_col = 2, width = 8)  # Column C:C
-            worksheet.set_column(first_col = 3, last_col = 3, width = 33) # Column D:D
-            worksheet.set_column(first_col = 4, last_col = 4, width = 18) # Column E:E
-            worksheet.set_column(first_col = 5, last_col = 5, width = 12) # Column F:F
-            worksheet.set_column(first_col = 6, last_col = 6, width = 11) # Column G:G
-            worksheet.set_column(first_col = 7, last_col = 7, width = 13) # Column H:H
-            worksheet.set_column(first_col = 8, last_col = 8, width = 36) # Column I:I
+            worksheet.set_column(first_col = 1, last_col = 1, width = 30) # Column B:B
+            worksheet.set_column(first_col = 2, last_col = 2, width = 33) # Column C:C
+            worksheet.set_column(first_col = 3, last_col = 3, width = 8)  # Column D:D
+            worksheet.set_column(first_col = 4, last_col = 4, width = 30) # Column E:E
+            worksheet.set_column(first_col = 5, last_col = 5, width = 18) # Column F:F
+            worksheet.set_column(first_col = 6, last_col = 6, width = 12) # Column G:G
+            worksheet.set_column(first_col = 7, last_col = 7, width = 11) # Column H:H
+            worksheet.set_column(first_col = 8, last_col = 8, width = 12) # Column I:I
+            worksheet.set_column(first_col = 9, last_col = 9, width = 18) # Column J:J
             if self.TYPE_INPUT == self.TYPE_REPOSITORY_UNION:
-                worksheet.set_column(first_col = 9, last_col = 9, width = 13) # Column J:J
-                worksheet.set_column(first_col = 10, last_col = 10, width = 30) # Column K:K
+                worksheet.set_column(first_col = 10, last_col = 10, width = 13) # Column K:K
+                worksheet.set_column(first_col = 11, last_col = 11, width = 30) # Column L:L
             else:
-                worksheet.set_column(first_col = 9, last_col = 9, width = 30) # Column J:J
+                worksheet.set_column(first_col = 10, last_col = 10, width = 30) # Column K:K
 
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
         icol = 0
@@ -323,6 +328,7 @@ class SCIhub:
                 ctrl_title = col_doi
             else:
                 col_title = item[self.xls_col_title]
+                col_abstract = item[self.xls_col_abstract]
                 col_year = item[self.xls_col_year]
                 col_doi = item[self.xls_col_doi]
                 col_document_type = item[self.xls_col_document_type]
@@ -348,18 +354,19 @@ class SCIhub:
             else:
                 worksheet.write(irow, icol + 0, irow, cell_format_row)
                 worksheet.write(irow, icol + 1, col_title, cell_format_row)
-                worksheet.write(irow, icol + 2, col_year, cell_format_row)
-                worksheet.write(irow, icol + 3, col_doi, cell_format_row)
-                worksheet.write(irow, icol + 4, col_document_type, cell_format_row)
-                worksheet.write(irow, icol + 5, col_languaje, cell_format_row)
-                worksheet.write(irow, icol + 6, col_cited_by, cell_format_row)
-                worksheet.write(irow, icol + 7, data_status[ctrl_title], cell_format_row)
-                worksheet.write(irow, icol + 8, col_authors, cell_format_row)
+                worksheet.write(irow, icol + 2, col_abstract, cell_format_row)
+                worksheet.write(irow, icol + 3, col_year, cell_format_row)
+                worksheet.write(irow, icol + 4, col_doi, cell_format_row)
+                worksheet.write(irow, icol + 5, col_document_type, cell_format_row)
+                worksheet.write(irow, icol + 6, col_languaje, cell_format_row)
+                worksheet.write(irow, icol + 7, col_cited_by, cell_format_row)
+                worksheet.write(irow, icol + 8, data_status[ctrl_title], cell_format_row)
+                worksheet.write(irow, icol + 9, col_authors, cell_format_row)
                 if self.TYPE_INPUT == self.TYPE_REPOSITORY_UNION:
-                    worksheet.write(irow, icol + 9, col_repository, cell_format_row)
-                    worksheet.write(irow, icol + 10, col_pdf_name, cell_format_row)
+                    worksheet.write(irow, icol + 10, col_repository, cell_format_row)
+                    worksheet.write(irow, icol + 11, col_pdf_name, cell_format_row)
                 else:
-                    worksheet.write(irow, icol + 9, col_pdf_name, cell_format_row)
+                    worksheet.write(irow, icol + 10, col_pdf_name, cell_format_row)
         workbook.close()
 
     def save_summary_text(self, dict_control):
@@ -536,6 +543,8 @@ class SCIhub:
 
         # Command execution
         _command = " ".join(command)
+        print(_command)
+        exit()
         try:
             p = subprocess.Popen(_command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
         except Exception as e:
@@ -586,7 +595,7 @@ def main():
         oscihub.set_xls_type()
         if oscihub.TYPE_INPUT is None:
             oscihub.show_print("The file is not in the correct format: %s" % oscihub.XLS_FILE, [oscihub.LOG_FILE])
-            raise Exception('Incorrect format')
+            raise Exception("Incorrect format: the excel file don't have the correct number of columns")
 
         oscihub.show_print("#############################################################################", [oscihub.LOG_FILE], font = oscihub.BIGREEN)
         oscihub.show_print("############################## Download papers ##############################", [oscihub.LOG_FILE], font = oscihub.BIGREEN)
