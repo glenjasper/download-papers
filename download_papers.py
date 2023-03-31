@@ -543,8 +543,6 @@ class SCIhub:
 
         # Command execution
         _command = " ".join(command)
-        print(_command)
-        exit()
         try:
             p = subprocess.Popen(_command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
         except Exception as e:
