@@ -30,8 +30,10 @@ This scripts downloads .pdf files from formatted .xlsx files, via DOI. Tested on
 ```sh
   $ sudo pip3 install -U scidownl
   $ sudo pip3 install argparse
-  $ sudo pip3 install openpyxl
   $ sudo pip3 install xlsxwriter
+  $ sudo pip3 install numpy
+  $ sudo pip3 install pandas
+  $ sudo pip3 install pypdf2
 ```
 
 ## Installation
