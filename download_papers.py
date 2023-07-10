@@ -9,7 +9,10 @@ import argparse
 import traceback
 import xlsxwriter
 import subprocess
-from openpyxl import load_workbook
+import numpy as np
+import pandas as pd
+from PyPDF2 import PdfReader
+from scidownl import scihub_download
 
 def menu():
     parser = argparse.ArgumentParser(description = "This scripts downloads .pdf files from formatted .xlsx files, via DOI.", epilog = "Thank you!")
@@ -203,14 +206,12 @@ class SCIhub:
         return output
 
     def set_xls_type(self):
-        workbook = load_workbook(filename = self.INPUT_FILE, data_only = True)
-        sheet = workbook[self.XLS_SHEET_UNIQUE]
-        rows = sheet.rows
+        df = pd.read_excel(io = self.INPUT_FILE, sheet_name = self.XLS_SHEET_UNIQUE)
+        # df = df.where(pd.notnull(df), None)
+        df = df.replace({np.nan: None})
+        # print(df)
 
-        ncolumns = 0
-        for row in rows:
-            ncolumns = len(row)
-            break
+        ncolumns = df.shape[1]
 
         if ncolumns == 10:
             self.TYPE_INPUT = self.TYPE_REPOSITORY_UNION
@@ -220,50 +221,30 @@ class SCIhub:
             self.TYPE_INPUT = self.TYPE_TXT
 
     def read_xls_summary(self):
-        workbook = load_workbook(filename = self.INPUT_FILE, data_only = True)
-        sheet = workbook[self.XLS_SHEET_UNIQUE]
-        rows = sheet.rows
+        df = pd.read_excel(io = self.INPUT_FILE, sheet_name = self.XLS_SHEET_UNIQUE)
+        # df = df.where(pd.notnull(df), None)
+        df = df.replace({np.nan: None})
+        # print(df)
 
         file_collection = {}
-        for index_i, row in enumerate(rows):
+        for index, row in df.iterrows():
             collection = {}
-            for index_j, cell in enumerate(row):
-                if cell.value == self.xls_col_item:
-                    break
-                column_name = None
-                cell_value = cell.value
+            if self.TYPE_INPUT == self.TYPE_TXT:
+                collection.update({self.xls_col_item: row[self.xls_col_item],
+                                   self.xls_col_doi: row[self.xls_col_doi]})
+            else:
+                collection.update({self.xls_col_item: row[self.xls_col_item],
+                                   self.xls_col_title: row[self.xls_col_title],
+                                   self.xls_col_abstract: row[self.xls_col_abstract],
+                                   self.xls_col_year: row[self.xls_col_year],
+                                   self.xls_col_doi: row[self.xls_col_doi],
+                                   self.xls_col_document_type: row[self.xls_col_document_type],
+                                   self.xls_col_languaje: row[self.xls_col_languaje],
+                                   self.xls_col_cited_by: row[self.xls_col_cited_by],
+                                   self.xls_col_authors: row[self.xls_col_authors],
+                                   self.xls_col_repository: row[self.xls_col_repository]})
 
-                if self.TYPE_INPUT == self.TYPE_TXT:
-                    if index_j == 0:
-                        column_name = self.xls_col_item
-                    elif index_j == 1:
-                        column_name = self.xls_col_doi
-                else:
-                    if index_j == 0:
-                        column_name = self.xls_col_item
-                    elif index_j == 1:
-                        column_name = self.xls_col_title
-                    elif index_j == 2:
-                        column_name = self.xls_col_abstract
-                    elif index_j == 3:
-                        column_name = self.xls_col_year
-                    elif index_j == 4:
-                        column_name = self.xls_col_doi
-                    elif index_j == 5:
-                        column_name = self.xls_col_document_type
-                    elif index_j == 6:
-                        column_name = self.xls_col_languaje
-                    elif index_j == 7:
-                        column_name = self.xls_col_cited_by
-                    elif index_j == 8:
-                        column_name = self.xls_col_authors
-                    elif index_j == 9:
-                        column_name = self.xls_col_repository
-
-                collection.update({column_name: cell_value})
-
-            if len(collection) > 0:
-                file_collection.update({index_i: collection})
+            file_collection.update({index + 1: collection})
 
         return file_collection
 
@@ -472,7 +453,7 @@ class SCIhub:
             status = item[self.STATUS_NAME]
 
             if self.TYPE_INPUT == self.TYPE_TXT:
-                title = None
+                title = 'Article'
                 document_type = self.FOLDER_TXT
                 message = "[%s/%s] Analyzing the DOI: %s" % (idx, record_count, doi)
                 year = idx
@@ -500,7 +481,7 @@ class SCIhub:
                 continue
             else:
                 # For Status: None and Not available
-                if doi is not None:
+                if doi:
                     try:
                         directory = os.path.join(self.OUTPUT_PATH, document_type)
                         self.create_directory(directory)
@@ -508,7 +489,20 @@ class SCIhub:
                         self.show_print("[%s/%s] Downloading paper..." % (idx, record_count), [self.LOG_FILE], font = self.GREEN)
                         pdfname = '%s.%s' % (year, title)
                         pdfname = self.check_title(pdfname)
-                        self.run_scidownl(doi = doi, out = directory, filename = pdfname)
+
+                        # self.run_scidownl(doi = doi, out = directory, filename = pdfname)
+
+                        out_pdf = os.path.join(directory, '%s.pdf' % pdfname)
+                        scihub_download(keyword = doi, paper_type = "doi", out = out_pdf)
+
+                        if not os.path.exists(out_pdf):
+                            assert False, 'Failed to download the paper'
+
+                        if not self.check_integrity(out_pdf):
+                            self.remove_file(out_pdf)
+                            self.show_print("[%s/%s] The file is corrupted, it was deleted." % (idx, record_count), [self.LOG_FILE], font = self.YELLOW)
+                            assert False, 'Failed to download the paper'
+
                         self.show_print("", [self.LOG_FILE])
                         dict_ctrl.update({ctrl_title: self.STATUS_OK})
                         self.write_file_control(ctrl_title, self.STATUS_OK)
@@ -535,11 +529,14 @@ class SCIhub:
         self.show_print("  For more details see the file: %s" % self.XLS_FILE, [self.LOG_FILE], font = self.GREEN)
 
     def run_scidownl(self, doi, out, filename):
-        # scidownl download --doi 10.1145/3375633 -o output_file
+        # scidownl download --doi 10.1145/3375633 --out article.pdf
+        # scidownl download --doi 10.1007/s11356-021-17048-7 --out article.pdf
+        # scidownl download --doi 10.1002/jctb.6956 --out article.pdf
+        # scidownl download --doi 10.1016/j.wasman.2022.05.023 --out article.pdf
 
         command = ["scidownl download",
-                   "--doi '%s'" % doi,
-                   "--out '%s'" % os.path.join(out, filename)]
+                   "--doi \"%s\"" % doi,
+                   "--out \"%s\"" % os.path.join(out, filename)]
 
         # Command execution
         _command = " ".join(command)
@@ -581,6 +578,18 @@ class SCIhub:
 
         return ' '.join(output_list)
 
+    def check_integrity(self, file):
+        with open(file, 'rb') as f:
+            try:
+                pdf = PdfReader(f)
+                info = pdf.metadata
+                if info:
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                return False
+
 def main():
     try:
         start = oscihub.start_time()
@@ -592,8 +601,9 @@ def main():
         oscihub.SUMMARY_FILE_CONTROL = os.path.join(oscihub.OUTPUT_PATH, oscihub.SUMMARY_FILE_CONTROL)
         oscihub.set_xls_type()
         if oscihub.TYPE_INPUT is None:
-            oscihub.show_print("The file is not in the correct format: %s" % oscihub.XLS_FILE, [oscihub.LOG_FILE])
-            raise Exception("Incorrect format: the excel file don't have the correct number of columns")
+            oscihub.show_print("Incorrect format: the excel file don't have the correct number of columns: %s" % oscihub.XLS_FILE, [oscihub.LOG_FILE], font = oscihub.YELLOW)
+            # raise Exception("Incorrect format: the excel file don't have the correct number of columns")
+            exit()
 
         oscihub.show_print("#############################################################################", [oscihub.LOG_FILE], font = oscihub.BIGREEN)
         oscihub.show_print("############################## Download papers ##############################", [oscihub.LOG_FILE], font = oscihub.BIGREEN)
