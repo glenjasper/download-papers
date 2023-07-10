@@ -2,7 +2,7 @@ download-papers
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-This scripts downloads .pdf files from formatted .xlsx files, via DOI. Tested only on GNU/Linux distribution (Debian).
+This scripts downloads .pdf files from formatted .xlsx files, via DOI. Tested on GNU/Linux (Debian, Ubuntu, CentOS) and Windows 10.
 
 ## Table of content
 
